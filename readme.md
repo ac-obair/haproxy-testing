@@ -1,6 +1,5 @@
 build and run different versions of haproxy
 
-
 Quickly replace the version of haproxy you're working with. Removes old versions add the one specific, cleans up image and container env. 
 
 ```bash
@@ -101,3 +100,7 @@ docker run --rm --name test -v /etc/haproxy:/usr/local/etc/haproxy -v /etc/pki/t
 ```bash
 docker run --rm --name syntax-check -v /etc/haproxy:/usr/local/etc/haproxy -v /etc/pki/tls/certs/letsencrypt:/etc/pki/tls/certs/letsencrypt -it haproxy:2.2.8 haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
 ```
+
+#### keepalived test
+Check for running container 
+test $(docker ps -q | wc -l) == 1
