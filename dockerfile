@@ -3,4 +3,6 @@ FROM haproxy:$VER
 EXPOSE 8080/tcp
 EXPOSE 80/tcp
 EXPOSE 443/tcp
+EXPOSE 3306/tcp
+EXPOSE 3307/tcp
 #ENTRYPOINT /bin/bash
