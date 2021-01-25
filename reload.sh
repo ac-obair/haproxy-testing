@@ -23,15 +23,16 @@ IP=$(ifconfig ${INTERFACE} | grep 'inet\b'|awk '{print$2}')
 
 docker container ls -f "name=haproxy*" --format "{{.ID}}"|xargs docker container stop
 
-echo building; docker build --build-arg VER=${VER} -t haproxy-${VER} .
+echo building
+docker build --build-arg VER=${VER} -t haproxy:${VER} .
 
-docker run --rm --name haproxy-${VER} \
+docker run --rm --name haproxy-${VER}-syntax-check \
                 -v /etc/haproxy:/usr/local/etc/haproxy \
                 -v /etc/pki/tls/certs/letsencrypt:/etc/pki/tls/certs/letsencrypt \
                 -v /etc/ssl/certs/ca-bundle.crt:/etc/ssl/certs/ca-bundle.crt \
-                -it haproxy-${VER} haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
+                -it haproxy:${VER} haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
 
-docker run --rm -d --name haproxy-${VER} \
+docker run --rm -d --name haproxy-${VER}-running-proxy \
 		-v /etc/haproxy:/usr/local/etc/haproxy \
 		-v /etc/pki/tls/certs/letsencrypt:/etc/pki/tls/certs/letsencrypt \
 		-v /etc/ssl/certs/ca-bundle.crt:/etc/ssl/certs/ca-bundle.crt \
@@ -41,7 +42,7 @@ docker run --rm -d --name haproxy-${VER} \
                 -p 80:${WEB_FRONTEND_TCP} \
                 -p 443:${ENCRYPTED_WEB_FRONTEND_TCP} \
                 -p 3306-3307:${DATABASE_TCP} \
-                haproxy-${VER}
+                haproxy:${VER}
 
 echo; echo started stats page http://${IP}:8080 admin:123
 echo listening http://${IP}:80 https://${IP}:443
