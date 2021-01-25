@@ -76,7 +76,6 @@ listening http://192.168.88.249:80 https://192.168.88.249:443
 REPOSITORY                           TAG                                              IMAGE ID       CREATED          SIZE
 haproxy-2.2.8                        latest                                           b25be74cc265   20 seconds ago   93.5MB
 haproxy-2.2                          latest                                           b25be74cc265   20 seconds ago   93.5MB
-ubuntu                               latest                                           f63181f19b2f   4 days ago       72.9MB
 haproxy                              2.2                                              3eae824b21ac   11 days ago      93.5MB
 haproxy                              2.2.8                                            3eae824b21ac   11 days ago      93.5MB
 ```
