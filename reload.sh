@@ -6,8 +6,7 @@ STATS_PORT_TCP=8080
 ADMIN_STATS_PORT_TCP=44443
 WEB_FRONTEND_TCP=80
 ENCRYPTED_WEB_FRONTEND_TCP=443
-DATABASE1_TCP=3306
-DATABASE2_TCP=3307
+DATABASE_TCP=3306-3307
 
 case $KERNEL in
   Darwin)
@@ -41,8 +40,7 @@ docker run --rm -d --name haproxy-${VER} \
                 -p 4443:${ADMIN_STATS_PORT_TCP} \
                 -p 80:${WEB_FRONTEND_TCP} \
                 -p 443:${ENCRYPTED_WEB_FRONTEND_TCP} \
-                -p 3306:${DATABASE1_TCP} \
-                -p 3307:${DATABASE2_TCP} \
+                -p 3306-3307:${DATABASE_TCP} \
                 haproxy-${VER}
 
 echo; echo started stats page http://${IP}:8080 admin:123
