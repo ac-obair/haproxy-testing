@@ -1,48 +1,26 @@
 #!/bin/bash
 VER=$1
-KERNEL=$(uname -s)
-#STATS_PORT_TCP=44444
-STATS_PORT_TCP=8080
-ADMIN_STATS_PORT_TCP=44443
-WEB_FRONTEND_TCP=80
-ENCRYPTED_WEB_FRONTEND_TCP=443
-DATABASE_TCP=3306-3307
-
-case $KERNEL in
-  Darwin)
-    INTERFACE=en0
-    ;;
-  Linux)
-   INTERFACE=ens160
-   ;;
-  *)
-   ;;
-esac
-
-IP=$(ifconfig ${INTERFACE} | grep 'inet\b'|awk '{print$2}')
+IMAGE_NAME=runable-haproxy-${VER}-image
 
 docker container ls -f "name=haproxy*" --format "{{.ID}}"|xargs docker container stop
 
 echo building
-docker build --build-arg VER=${VER} -t haproxy:${VER} .
+docker build --build-arg VER=${VER} -t ${IMAGE_NAME}:${VER} .
 
-docker run --rm --name haproxy-${VER}-syntax-check \
+docker run --rm --name haproxy-${VER}-syntax-check --network host \
                 -v /etc/haproxy:/usr/local/etc/haproxy \
                 -v /etc/pki/tls/certs/letsencrypt:/etc/pki/tls/certs/letsencrypt \
                 -v /etc/ssl/certs/ca-bundle.crt:/etc/ssl/certs/ca-bundle.crt \
-                -it haproxy:${VER} haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
+                -v /etc/haproxy/errors:/etc/haproxy/errors \
+                -it ${IMAGE_NAME}:${VER} haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
 
-docker run --rm -d --name haproxy-${VER}-running-proxy \
+docker run --rm -d --security-opt seccomp:unconfined --privileged --log-driver=journald --cpus 8 --name haproxy-${VER}-running-proxy --network host \
 		-v /etc/haproxy:/usr/local/etc/haproxy \
 		-v /etc/pki/tls/certs/letsencrypt:/etc/pki/tls/certs/letsencrypt \
 		-v /etc/ssl/certs/ca-bundle.crt:/etc/ssl/certs/ca-bundle.crt \
                 -v socket_vol:/var/lib/haproxy \
-                -p 8080:${STATS_PORT_TCP} \
-                -p 4443:${ADMIN_STATS_PORT_TCP} \
-                -p 80:${WEB_FRONTEND_TCP} \
-                -p 443:${ENCRYPTED_WEB_FRONTEND_TCP} \
-                -p 3306-3307:${DATABASE_TCP} \
-                haproxy:${VER}
+                -v /etc/haproxy/errors:/etc/haproxy/errors \
+                ${IMAGE_NAME}:${VER}
 
-echo; echo started stats page http://${IP}:8080 admin:123
-echo listening http://${IP}:80 https://${IP}:443
+echo running containers
+docker container ls
