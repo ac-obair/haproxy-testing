@@ -5,6 +5,7 @@ Quickly replace the version of haproxy you're working with. Removes old versions
 ```bash
 ./reload 2.2
 ./reload 2.2.9
+./reload lts (same as 2.2.9 or latest lts)
 ./reload latest
 ./reload 2.3
 ./reload 1.8
