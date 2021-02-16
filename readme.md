@@ -16,7 +16,7 @@ This preserves the host haproxy environment for deploys. Use `./unlink` to fall 
 ./unlink
 ```
 
-```
+```bash
 ./reload-config.sh # doesn't effect container uptime in memory config reload
 ./stop.sh          # stop container --rm flag ensures container is removed when stopped
 ```
